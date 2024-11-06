@@ -35,14 +35,12 @@ jobs:
           git clone --branch master https://git.openwrt.org/openwrt/openwrt.git openwrt
           cd openwrt
           git checkout ${{ github.event.inputs.openwrt_commit }}
-          git log
           
       - name: Clone mtk-openwrt-feeds
         run: |
           git clone --branch master https://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds
           cd mtk-openwrt-feeds
           git checkout ${{ github.event.inputs.mtk_feeds_commit }}
-          git log
 
       - name: Run a one-line script
         run: |
