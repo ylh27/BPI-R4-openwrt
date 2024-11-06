@@ -24,7 +24,7 @@ jobs:
           gcc-multilib g++-multilib gettext git libncurses5-dev libssl-dev \
           python3-setuptools rsync swig unzip zlib1g-dev file wget
 
-  build:
+  pull_build:
     needs: setup
     runs-on: ubuntu-24.04
     
@@ -48,7 +48,7 @@ jobs:
           bash ../mtk-openwrt-feeds/autobuild/unified/autobuild.sh filogic-mac80211-bpi-r4 log_file=make
 
       - name: Save build artifacts
-        uses: actions/upload-artifacts@v3
+        uses: actions/upload-artifact@v4
         with:
           name: autobuild_release
           path: openwrt/autobuild_release
