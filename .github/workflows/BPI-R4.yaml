@@ -1,0 +1,55 @@
+# compile from latest commits
+
+name: BPI-R4
+
+on:
+  workflow_dispatch:
+    inputs:
+      openwrt_commit:
+        description: "Commit ID to use for OpenWrt"
+        required: true
+      mtk_feeds_commit:
+        description: "Commit ID to use for mtk_openwrt_feeds"
+        required: true
+
+jobs:
+  setup:
+    runs-on: ubuntu-24.04
+    
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install build-essential clang flex bison g++ gawk \
+          gcc-multilib g++-multilib gettext git libncurses5-dev libssl-dev \
+          python3-setuptools rsync swig unzip zlib1g-dev file wget
+
+  build:
+    needs: setup
+    runs-on: ubuntu-24.04
+    
+    steps:
+      # https://git01.mediatek.com/plugins/gitiles/openwrt/feeds/mtk-openwrt-feeds/+/refs/heads/master/autobuild/unified/
+      - name: Checkout openwrt
+        run: |
+          git clone --branch master https://git.openwrt.org/openwrt/openwrt.git openwrt
+          cd openwrt
+          git checkout ${{ github.event.inputs.openwrt_commit }}
+          
+      - name: Clone mtk-openwrt-feeds
+        run: |
+          git clone --branch master https://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds
+          cd mtk-openwrt-feeds
+          git checkout ${{ github.event.inputs.openwrt_commit }}
+
+      - name: Run a one-line script
+        run: |
+          cd openwrt
+          bash ../mtk-openwrt-feeds/autobuild/unified/autobuild.sh filogic-mac80211-bpi-r4 log_file=make
+
+      - name: Save build artifacts
+        uses: actions/upload-artifacts@v3
+        with:
+          name: autobuild_release
+          path: openwrt/autobuild_release
+
