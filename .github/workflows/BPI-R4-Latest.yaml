@@ -31,7 +31,7 @@ jobs:
       - name: Clone mtk-openwrt-feeds
         run: git clone --branch master https://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds
 
-      - name: Run a one-line script
+      - name: Build with script
         run: |
           cd openwrt
           bash ../mtk-openwrt-feeds/autobuild/unified/autobuild.sh filogic-mac80211-bpi-r4 log_file=make
