@@ -17,10 +17,10 @@ jobs:
           python3-setuptools rsync swig unzip zlib1g-dev file wget
           
       - name: Checkout openwrt
-        uses: actions/checkout@v2
-        with:
-          repository: openwrt/openwrt
-          path: openwrt
+        run: |
+          git clone --branch master https://git.openwrt.org/openwrt/openwrt.git openwrt
+          cd openwrt
+          git checkout c3251f
           
       - name: Clone mtk-openwrt-feeds
         run: git clone --branch master https://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds
