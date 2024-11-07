@@ -1,4 +1,4 @@
-# compile from latest commits
+# compile from specific commits
 
 name: BPI-R4
 
@@ -53,3 +53,27 @@ jobs:
           name: autobuild_release
           path: openwrt/autobuild_release
 
+      - name: Set tag name
+        id: tag
+        run: |
+          TAG_NAME="release-${{ env.RELEASE_DATE }}"
+          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          release_name: "Release ${{ env.RELEASE_DATE }}"
+          draft: false
+          prerelease: false
+
+      - name: Upload artifact to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: openwrt/autobuild_release
+          asset_name: autobuild_release.zip
+          asset_content_type: application/zip
