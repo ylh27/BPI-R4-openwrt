@@ -26,7 +26,7 @@ jobs:
     steps:
       # https://git01.mediatek.com/plugins/gitiles/openwrt/feeds/mtk-openwrt-feeds/+/refs/heads/master/autobuild/unified/
       - name: Checkout openwrt
-        run: git clone --branch master https://git.openwrt.org/openwrt/openwrt.git openwrt
+        run: git clone --branch openwrt-24.10 https://git.openwrt.org/openwrt/openwrt.git openwrt
           
       - name: Clone mtk-openwrt-feeds
         run: git clone --branch master https://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds
