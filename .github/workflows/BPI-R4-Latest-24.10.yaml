@@ -24,6 +24,11 @@ jobs:
     runs-on: ubuntu-24.04
     
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
       # https://git01.mediatek.com/plugins/gitiles/openwrt/feeds/mtk-openwrt-feeds/+/refs/heads/master/autobuild/unified/
       - name: Checkout openwrt
         run: git clone --branch openwrt-24.10 https://git.openwrt.org/openwrt/openwrt.git openwrt
@@ -31,16 +36,29 @@ jobs:
       - name: Clone mtk-openwrt-feeds
         run: git clone --branch master https://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds
 
-      - name: Build with script
+      - name: Prepare for building
         run: |
           cd openwrt
-          bash ../mtk-openwrt-feeds/autobuild/unified/autobuild.sh filogic-mac80211-bpi-r4 log_file=make
+          bash ../mtk-openwrt-feeds/autobuild/unified/autobuild.sh filogic-mac80211-bpi-r4 prepare log_file=make
+
+      - name: Apply config patch
+        run: |
+          cd openwrt
+          ../config-patch.sh
+          make defconfig
+          cat .config
+
+      - name: Build
+        run: make -j$(nproc) download world
+
+      - name: Tar output
+        run: tar -czvf BPI-R4-openwrt-24.10.tar openwrt/bin/targets/mediatek/filogic
 
       - name: Save build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: autobuild_release
-          path: openwrt/autobuild_release
+          name: BPI-R4-openwrt-24.10
+          path: BPI-R4-openwrt-24.10.tar
 
       - name: Set tag name
         id: tag
@@ -63,7 +81,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: openwrt/autobuild_release
-          asset_name: autobuild_release.zip
+          asset_path: openwrt/bin/targets/mediatek/filogic
+          asset_name: BPI-R4-openwrt-24.10.zip
           asset_content_type: application/zip
           
