@@ -1,6 +1,6 @@
 # compile from latest commits
 
-name: BPI-R4-Latest
+name: BPI-R4-Latest-24.10
 
 on:
   schedule:
