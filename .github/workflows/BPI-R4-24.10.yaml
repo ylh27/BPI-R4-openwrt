@@ -1,6 +1,6 @@
 # compile from specific commits
 
-name: BPI-R4
+name: BPI-R4-24.10
 
 on:
   workflow_dispatch:
@@ -33,7 +33,7 @@ jobs:
       # https://git01.mediatek.com/plugins/gitiles/openwrt/feeds/mtk-openwrt-feeds/+/refs/heads/master/autobuild/unified/
       - name: Checkout openwrt
         run: |
-          git clone --branch master https://git.openwrt.org/openwrt/openwrt.git openwrt
+          git clone --branch openwrt-24.10 https://git.openwrt.org/openwrt/openwrt.git openwrt
           cd openwrt
           git checkout ${{ github.event.inputs.openwrt_commit }}
           
