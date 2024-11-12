@@ -47,7 +47,9 @@ jobs:
           ../config-patch.sh
 
       - name: Build
-        run: make -j$(nproc) download world
+        run: |
+          cd openwrt
+          make -j$(nproc) download world
 
       - name: Tar output
         run: tar -czvf BPI-R4-openwrt-24.10.tar openwrt/bin/targets/mediatek/filogic
