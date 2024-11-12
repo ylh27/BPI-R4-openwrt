@@ -8,4 +8,6 @@ cat feeds.conf.default
 
 make defconfig
 
-cat .config
+# install luci
+./scripts/feeds update luci
+./scripts/feeds install -a -p luci
