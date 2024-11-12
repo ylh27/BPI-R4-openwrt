@@ -45,8 +45,6 @@ jobs:
         run: |
           cd openwrt
           ../config-patch.sh
-          make defconfig
-          cat .config
 
       - name: Build
         run: make -j$(nproc) download world
