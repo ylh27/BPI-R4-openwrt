@@ -33,7 +33,8 @@ jobs:
       - name: Checkout openwrt
         uses: actions/checkout@v4
         with:
-          ref: openwrt/openwrt
+          repository: openwrt/openwrt
+          ref: openwrt-24.10
           path: openwrt
           
       - name: Clone mtk-openwrt-feeds
