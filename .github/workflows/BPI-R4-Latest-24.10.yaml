@@ -54,7 +54,7 @@ jobs:
         run: |
           cd openwrt
           export NO_JEVENTS=1
-          make download world
+          make -j$(nproc) V=s download world
 
       - name: Tar output
         run: tar -czvf BPI-R4-openwrt-24.10.tar openwrt/bin/targets/mediatek/filogic
