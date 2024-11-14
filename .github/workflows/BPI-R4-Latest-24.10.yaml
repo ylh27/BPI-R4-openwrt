@@ -45,6 +45,9 @@ jobs:
           cd openwrt
           bash ../mtk-openwrt-feeds/autobuild/unified/autobuild.sh filogic-mac80211-bpi-r4 prepare log_file=make
 
+      - name: Delete mtk feed
+        run: rm -rf mtk-openwrt-feeds
+
       - name: Apply config patch
         run: |
           cd openwrt
