@@ -54,6 +54,7 @@ jobs:
       - name: Autobuild
         run: |
           cd openwrt
+          export NO_JEVENTS=1
           bash ../mtk-openwrt/autobuild/unified/autobuild.sh ${{ inputs.target }} log_file=make
 
       - name: Tar output
