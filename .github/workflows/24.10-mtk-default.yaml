@@ -3,9 +3,19 @@
 name: BPI-R4-Latest-24.10
 
 on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Choose build target
+        required: true
+        type: string
+        default: 'filogic-mac80211-bpi-r4'
+        options:
+          - filogic-mac80211-mt7988_rfb-mt7996
+          - filogic-mac80211-mozart
+          - filogic-mac80211-bpi-r4
   schedule:
     - cron: '0 0 * * *'
-  workflow_dispatch:
 
 jobs:
   setup:
@@ -22,57 +32,38 @@ jobs:
   checkout_and_build:
     needs: setup
     runs-on: ubuntu-24.04
-    
+
+    # https://git01.mediatek.com/plugins/gitiles/openwrt/feeds/mtk-openwrt-feeds/+/refs/heads/master/autobuild/unified/
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
 
-      # https://git01.mediatek.com/plugins/gitiles/openwrt/feeds/mtk-openwrt-feeds/+/refs/heads/master/autobuild/unified/
       - name: Checkout openwrt
         uses: actions/checkout@v4
         with:
           repository: openwrt/openwrt
           ref: openwrt-24.10
           path: openwrt
-          
+
+      # external build
       - name: Clone mtk-openwrt-feeds
-        run: git clone --branch master https://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds
+        run: git clone --branch master https://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds mtk-openwrt
 
-      - name: Prepare for building
+      - name: Autobuild
         run: |
           cd openwrt
-          bash ../mtk-openwrt-feeds/autobuild/unified/autobuild.sh filogic-mac80211-bpi-r4 prepare log_file=make
-
-      - name: Delete mtk feed
-        run: rm -rf mtk-openwrt-feeds
-
-      - name: Apply config patch
-        run: |
-          cd openwrt
-          ../config-patch.sh
-
-      - name: Build
-        run: |
-          cd openwrt
-          export NO_JEVENTS=1
-          make -j$(nproc) V=s download world
+          bash ../mtk-openwrt/autobuild/unified/autobuild.sh ${{ inputs.target }} log_file=make
 
       - name: Tar output
-        run: tar -czvf BPI-R4-openwrt-24.10.tar openwrt/bin/targets/mediatek/filogic
+        run: tar -czvf mtk-openwrt-24.10.tar.gz openwrt/bin/targets/mediatek/filogic
 
       - name: Save build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: BPI-R4-openwrt-24.10
-          path: BPI-R4-openwrt-24.10.tar
-
-      - name: Set tag name
-        id: tag
-        run: |
-          TAG_NAME="nightly-${{ env.RELEASE_DATE }}"
-          echo "TAG_NAME=$TAG_NAME" >> $GITHUB_ENV
+          name: mtk-openwrt-24.10
+          path: mtk-openwrt-24.10.tar.gz
 
       - name: Create release
         id: create_release
@@ -80,7 +71,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.TAG_NAME }}
+          tag_name: ${{ inputs.target }}
           release_name: "Nightly ${{ env.RELEASE_DATE }}"
           draft: false
           prerelease: true
@@ -89,7 +80,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: openwrt/bin/targets/mediatek/filogic
-          asset_name: BPI-R4-openwrt-24.10.zip
-          asset_content_type: application/zip
+          asset_path: ./mtk-openwrt-24.10.tar.gz
+          asset_name: mtk-openwrt-24.10.tar.gz
+          asset_content_type: application/gzip
           
