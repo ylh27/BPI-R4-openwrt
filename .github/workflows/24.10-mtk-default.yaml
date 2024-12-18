@@ -1,6 +1,6 @@
 # compile from latest commits
 
-name: BPI-R4-Latest-24.10
+name: 24.10-mtk-default
 
 on:
   workflow_dispatch:
