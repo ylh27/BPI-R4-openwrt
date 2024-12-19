@@ -59,11 +59,22 @@ jobs:
       - name: Delete mtk-openwrt
         run: rm -rf mtk-openwrt
 
+      - name: Install dependencies
+        run: |
+          cd openwrt
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
+      - name: Download source
+        run: |
+          cd openwrt
+          make -j`nproc` download
+
       - name: Build
         run: |
           cd openwrt
           export NO_JEVENTS=1
-          make -j`nproc` download world
+          make -j`nproc` world
 
       - name: Tar output
         run: tar -czvf mtk-openwrt-24.10.tar.gz openwrt/bin/targets/mediatek/filogic
