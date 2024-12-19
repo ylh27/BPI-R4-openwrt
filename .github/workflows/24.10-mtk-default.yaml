@@ -49,32 +49,44 @@ jobs:
 
       # external build
       - name: Clone mtk-openwrt-feeds
-        run: git clone --branch master https://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds mtk-openwrt
+        run: git clone --branch master https://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds mtk-openwrt-feeds
 
       - name: Prepare for building
         run: |
           cd openwrt
-          bash ../mtk-openwrt/autobuild/unified/autobuild.sh ${{ inputs.target }} prepare log_file=make
+          bash ../mtk-openwrt-feeds/autobuild/unified/autobuild.sh ${{ inputs.target }} prepare log_file=make
 
       - name: Delete mtk-openwrt
-        run: rm -rf mtk-openwrt
+        run: rm -rf mtk-openwrt-feeds
+
+      - name: Reset default feeds
+        run: |
+          cd openwrt
+          git reset feeds.conf.default
+          echo "src-git mtk_openwrt_feed https://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds" >> feeds.conf.default
 
       - name: Install dependencies
         run: |
           cd openwrt
-          ./scripts/feeds update -a
+          ./scripts/feeds update -a -r
           ./scripts/feeds install -a
 
-      - name: Download source
+      - name: Make defconfig
         run: |
           cd openwrt
-          make -j`nproc` download
+          make defconfig
+          make clean
+
+      - name: Cleanup space
+        run: |
+          rm -rf /home/runner/work/*
+          rm -rf /tmp/*
 
       - name: Build
         run: |
           cd openwrt
           export NO_JEVENTS=1
-          make -j`nproc` world
+          make -j`nproc` download world
 
       - name: Tar output
         run: tar -czvf mtk-openwrt-24.10.tar.gz openwrt/bin/targets/mediatek/filogic
