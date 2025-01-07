@@ -29,7 +29,7 @@ jobs:
           gcc-multilib g++-multilib gettext git libncurses5-dev libssl-dev \
           python3-setuptools rsync swig unzip zlib1g-dev file wget -y
 
-  prepare:
+  build:
     needs: setup
     runs-on: ubuntu-24.04
 
@@ -51,38 +51,10 @@ jobs:
       - name: Clone mtk-openwrt-feeds
         run: git clone --branch master https://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds mtk-openwrt
 
-      - name: Prepare for building
+      - name: Autobuild
         run: |
           cd openwrt
-          bash ../mtk-openwrt/autobuild/unified/autobuild.sh ${{ inputs.target }} prepare log_file=make
-
-      - name: Make defconfig
-        run: |
-          cd openwrt
-          make defconfig
-          make -j`nproc` download
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: openwrt
-          path: openwrt/
-
-  build_release:
-    needs: [setup, prepare]
-    runs-on: ubuntu-24.04
-
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: openwrt
-    
-      - name: Build
-        run: |
-          cd openwrt
-          export NO_JEVENTS=1
-          make -j`nproc` world
+          bash ../mtk-openwrt/autobuild/unified/autobuild.sh ${{ inputs.target }} log_file=make
 
       - name: Tar output
         run: tar -czvf mtk-openwrt-24.10.tar.gz openwrt/bin/targets/mediatek/filogic
