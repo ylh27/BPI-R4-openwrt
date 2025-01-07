@@ -18,7 +18,7 @@ on:
     - cron: '0 0 * * *'
 
 jobs:
-  setup:
+  build:
     runs-on: ubuntu-24.04
     
     steps:
@@ -29,12 +29,10 @@ jobs:
           gcc-multilib g++-multilib gettext git libncurses5-dev libssl-dev \
           python3-setuptools rsync swig unzip zlib1g-dev file wget -y
 
-  build:
-    needs: setup
-    runs-on: ubuntu-24.04
+      - name: Print free space
+        run: df -h
 
     # https://git01.mediatek.com/plugins/gitiles/openwrt/feeds/mtk-openwrt-feeds/+/refs/heads/master/autobuild/unified/
-    steps:
       - name: Checkout openwrt
         uses: actions/checkout@v4
         with:
@@ -45,6 +43,9 @@ jobs:
       # external build
       - name: Clone mtk-openwrt-feeds
         run: git clone --branch master https://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds mtk-openwrt
+
+      - name: Print free space
+        run: df -h
 
       - name: Autobuild
         run: |
