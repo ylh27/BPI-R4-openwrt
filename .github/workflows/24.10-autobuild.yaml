@@ -40,7 +40,7 @@ jobs:
 
     # https://git01.mediatek.com/plugins/gitiles/openwrt/feeds/mtk-openwrt-feeds/+/refs/heads/master/autobuild/unified/
       - name: Checkout openwrt
-        run: git clone --branch openwrt-24.10 https://github.com/openwrt/openwrt.git /mnt/openwrt
+        run: sudo git clone --branch openwrt-24.10 https://github.com/openwrt/openwrt.git /mnt/openwrt
         #uses: actions/checkout@v4
         #with:
         #  repository: openwrt/openwrt
@@ -49,18 +49,19 @@ jobs:
 
       # external build
       - name: Clone mtk-openwrt-feeds
-        run: git clone --branch master https://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds /mnt/mtk-openwrt
+        run: sudo git clone --branch master https://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds /mnt/mtk-openwrt
 
       - name: Print free space
         run: df -h
 
       - name: Autobuild
         run: |
+          sudo -i
           cd /mnt/openwrt
           bash ../mtk-openwrt/autobuild/unified/autobuild.sh ${{ inputs.target }} log_file=make
 
       - name: Tar output
-        run: tar -czvf mtk-openwrt-24.10.tar.gz /mnt/openwrt/bin/targets/mediatek/filogic
+        run: sudo tar -czvf mtk-openwrt-24.10.tar.gz /mnt/openwrt/bin/targets/mediatek/filogic
 
       - name: Save build artifacts
         uses: actions/upload-artifact@v4
