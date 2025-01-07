@@ -29,6 +29,12 @@ jobs:
           gcc-multilib g++-multilib gettext git libncurses5-dev libssl-dev \
           python3-setuptools rsync swig unzip zlib1g-dev file wget -y
 
+      - name: Clean APT
+        run: |
+          sudo apt-get autoclean
+          sudo apt-get autoremove
+          sudo apt-get clean
+
       - name: Print free space
         run: df -h
 
@@ -38,22 +44,22 @@ jobs:
         with:
           repository: openwrt/openwrt
           ref: openwrt-24.10
-          path: openwrt
+          path: /mnt/openwrt
 
       # external build
       - name: Clone mtk-openwrt-feeds
-        run: git clone --branch master https://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds mtk-openwrt
+        run: git clone --branch master https://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds /mnt/mtk-openwrt
 
       - name: Print free space
         run: df -h
 
       - name: Autobuild
         run: |
-          cd openwrt
+          cd /mnt/openwrt
           bash ../mtk-openwrt/autobuild/unified/autobuild.sh ${{ inputs.target }} log_file=make
 
       - name: Tar output
-        run: tar -czvf mtk-openwrt-24.10.tar.gz openwrt/bin/targets/mediatek/filogic
+        run: tar -czvf mtk-openwrt-24.10.tar.gz /mnt/openwrt/bin/targets/mediatek/filogic
 
       - name: Save build artifacts
         uses: actions/upload-artifact@v4
