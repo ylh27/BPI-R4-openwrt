@@ -40,11 +40,12 @@ jobs:
 
     # https://git01.mediatek.com/plugins/gitiles/openwrt/feeds/mtk-openwrt-feeds/+/refs/heads/master/autobuild/unified/
       - name: Checkout openwrt
-        uses: actions/checkout@v4
-        with:
-          repository: openwrt/openwrt
-          ref: openwrt-24.10
-          path: /mnt/openwrt
+        run: git clone --branch openwrt-24.10 https://github.com/openwrt/openwrt.git /mnt/openwrt
+        #uses: actions/checkout@v4
+        #with:
+        #  repository: openwrt/openwrt
+        #  ref: openwrt-24.10
+        #  path: /mnt/openwrt
 
       # external build
       - name: Clone mtk-openwrt-feeds
