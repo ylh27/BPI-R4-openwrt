@@ -35,11 +35,6 @@ jobs:
 
     # https://git01.mediatek.com/plugins/gitiles/openwrt/feeds/mtk-openwrt-feeds/+/refs/heads/master/autobuild/unified/
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref }}
-
       - name: Checkout openwrt
         uses: actions/checkout@v4
         with:
