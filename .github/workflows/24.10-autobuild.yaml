@@ -1,6 +1,6 @@
 # compile from latest commits
 
-name: 24.10-mtk-default
+name: 24.10-autobuild
 
 on:
   workflow_dispatch:
