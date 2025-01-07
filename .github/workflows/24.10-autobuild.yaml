@@ -56,9 +56,8 @@ jobs:
 
       - name: Autobuild
         run: |
-          sudo -i
           cd /mnt/openwrt
-          bash ../mtk-openwrt/autobuild/unified/autobuild.sh ${{ inputs.target }} log_file=make
+          sudo bash ../mtk-openwrt/autobuild/unified/autobuild.sh ${{ inputs.target }} log_file=make
 
       - name: Tar output
         run: sudo tar -czvf mtk-openwrt-24.10.tar.gz /mnt/openwrt/bin/targets/mediatek/filogic
