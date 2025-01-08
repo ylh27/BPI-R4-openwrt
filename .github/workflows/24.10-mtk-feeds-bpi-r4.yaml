@@ -1,19 +1,9 @@
 # compile from latest commits
 
-name: 24.10-autobuild
+name: 24.10-mtk-feeds-bpi-r4
 
 on:
   workflow_dispatch:
-    inputs:
-      target:
-        description: Choose build target
-        required: true
-        type: string
-        default: 'filogic-mac80211-bpi-r4'
-        options:
-          - filogic-mac80211-mt7988_rfb-mt7996
-          - filogic-mac80211-mozart
-          - filogic-mac80211-bpi-r4
   schedule:
     - cron: '0 0 * * *'
 
@@ -57,7 +47,7 @@ jobs:
       - name: Autobuild
         run: |
           cd /mnt/openwrt
-          sudo bash ../mtk-openwrt/autobuild/unified/autobuild.sh ${{ inputs.target }} log_file=make
+          sudo bash ../mtk-openwrt/autobuild/unified/autobuild.sh filogic-mac80211-bpi-r4 log_file=make
 
       - name: Tar output
         run: sudo tar -czvf mtk-openwrt-24.10.tar.gz /mnt/openwrt/bin/targets/mediatek/filogic
