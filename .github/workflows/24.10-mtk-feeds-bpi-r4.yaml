@@ -19,34 +19,18 @@ jobs:
           gcc-multilib g++-multilib gettext git libncurses5-dev libssl-dev \
           python3-setuptools rsync swig unzip zlib1g-dev file wget -y
 
-      - name: Clean APT
-        run: |
-          sudo apt-get autoclean
-          sudo apt-get autoremove
-          sudo apt-get clean
-
-      - name: Print free space
-        run: df -h
-
-    # https://git01.mediatek.com/plugins/gitiles/openwrt/feeds/mtk-openwrt-feeds/+/refs/heads/master/autobuild/unified/
+      # https://git01.mediatek.com/plugins/gitiles/openwrt/feeds/mtk-openwrt-feeds/+/refs/heads/master/autobuild/unified/
       - name: Checkout openwrt
         run: sudo git clone --branch openwrt-24.10 https://github.com/openwrt/openwrt.git /mnt/openwrt
-        #uses: actions/checkout@v4
-        #with:
-        #  repository: openwrt/openwrt
-        #  ref: openwrt-24.10
-        #  path: /mnt/openwrt
 
       # external build
       - name: Clone mtk-openwrt-feeds
         run: sudo git clone --branch master https://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds /mnt/mtk-openwrt
 
-      - name: Print free space
-        run: df -h
-
       - name: Autobuild
         run: |
           cd /mnt/openwrt
+          export FORCE_UNSAFE_CONFIGURE=1
           sudo bash ../mtk-openwrt/autobuild/unified/autobuild.sh filogic-mac80211-bpi-r4 log_file=make
 
       - name: Tar output
