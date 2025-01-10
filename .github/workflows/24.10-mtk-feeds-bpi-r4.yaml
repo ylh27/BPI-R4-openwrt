@@ -4,6 +4,15 @@ name: 24.10-mtk-feeds-bpi-r4
 
 on:
   workflow_dispatch:
+    inputs:
+      openwrt_commit:
+        description: "OpenWrt Commit to Use"
+        required: true
+        default: "HEAD"
+      mtk_commit:
+        description: "MTK Feeds Commit to Use"
+        required: true
+        default: "HEAD"
   schedule:
     - cron: '0 0 * * *'
 
@@ -21,11 +30,17 @@ jobs:
 
       # https://git01.mediatek.com/plugins/gitiles/openwrt/feeds/mtk-openwrt-feeds/+/refs/heads/master/autobuild/unified/
       - name: Checkout openwrt
-        run: sudo git clone --branch openwrt-24.10 https://github.com/openwrt/openwrt.git /mnt/openwrt
+        run: |
+          sudo git clone --branch openwrt-24.10 https://github.com/openwrt/openwrt.git /mnt/openwrt
+          cd /mnt/openwrt
+          sudo git checkout ${{ env.openwrt_commit }}
 
       # external build
       - name: Clone mtk-openwrt-feeds
-        run: sudo git clone --branch master https://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds /mnt/mtk-openwrt
+        run: |
+          sudo git clone --branch master https://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds /mnt/mtk-openwrt
+          cd /mnt/mtk-openwrt
+          sudo git checkout ${{ env.mtk_commit }}
 
       - name: Prepare
         run: |
