@@ -50,7 +50,8 @@ jobs:
       - name: Build
         run: |
           cd /mnt/openwrt
-          sudo make -j`nproc` V=sc download world
+          export NO_JEVENTS=1
+          sudo -E make -j`nproc` V=sc download world
 
       - name: Tar output
         run: sudo tar -czvf mtk-openwrt-24.10.tar.gz /mnt/openwrt/bin/targets/mediatek/filogic
