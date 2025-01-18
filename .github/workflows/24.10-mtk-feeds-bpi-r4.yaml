@@ -33,14 +33,14 @@ jobs:
         run: |
           sudo git clone --branch openwrt-24.10 https://github.com/openwrt/openwrt.git /mnt/openwrt
           cd /mnt/openwrt
-          sudo git checkout ${{ env.openwrt_commit }}
+          sudo git checkout ${{ inputs.openwrt_commit }}
 
       # external build
       - name: Clone mtk-openwrt-feeds
         run: |
           sudo git clone --branch master https://git01.mediatek.com/openwrt/feeds/mtk-openwrt-feeds /mnt/mtk-openwrt
           cd /mnt/mtk-openwrt
-          sudo git checkout ${{ env.mtk_commit }}
+          sudo git checkout ${{ inputs.mtk_commit }}
 
       - name: Prepare
         run: |
@@ -50,7 +50,6 @@ jobs:
       - name: Build
         run: |
           cd /mnt/openwrt
-          export NO_JEVENTS=1
           sudo -E make -j`nproc` V=sc download world
 
       - name: Tar output
@@ -68,7 +67,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ inputs.target }}
+          tag_name: filogic-mac80211-bpi-r4
           release_name: "Nightly ${{ env.RELEASE_DATE }}"
           draft: false
           prerelease: true
