@@ -42,15 +42,11 @@ jobs:
           cd /mnt/mtk-openwrt
           sudo git checkout ${{ inputs.mtk_commit }}
 
-      - name: Prepare
+      - name: Autobuild
         run: |
           cd /mnt/openwrt
-          sudo bash ../mtk-openwrt/autobuild/unified/autobuild.sh filogic-mac80211-bpi-r4 prepare log_file=make
-
-      - name: Build
-        run: |
-          cd /mnt/openwrt
-          sudo -E make -j`nproc` V=sc download world
+          export FORCE_UNSAFE_CONFIGURE=1
+          sudo -E bash ../mtk-openwrt/autobuild/unified/autobuild.sh filogic-mac80211-bpi-r4 log_file=make
 
       - name: Tar output
         run: sudo tar -czvf mtk-openwrt-24.10.tar.gz /mnt/openwrt/bin/targets/mediatek/filogic
