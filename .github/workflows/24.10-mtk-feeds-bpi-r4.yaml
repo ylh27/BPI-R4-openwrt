@@ -62,22 +62,36 @@ jobs:
           cd /mnt/openwrt/bin/targets/mediatek
           sudo tar -czvf mtk-openwrt-24.10.tar.gz filogic
 
+      - name: Set release date
+        run: echo "RELEASE_DATE=$(date -u +'%Y-%m-%d')" >> $GITHUB_ENV
+
+      - name: Set release tag
+        run: |
+          if [ "${{ github.event_name }}" == "schedule" ]; then
+            echo "This is a scheduled run."
+            echo "RELEASE_TAG=$(date -u +'%Y-%m-%d')" >> $GITHUB_ENV
+          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "This is a manual run."
+            echo "RELEASE_TAG=$(date -u +'%Y-%m-%d')-${{ inputs.openwrt_commit }}-${{ inputs.mtk_commit }}" >> $GITHUB_ENV
+          fi
+
       - name: Create release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: "filogic-mac80211-bpi-r4"
-          release_name: "Nightly ${{ env.RELEASE_DATE }}"
+          release_name: ${{ env.RELEASE_DATE }} Nightly
+          tag_name: ${{ env.RELEASE_TAG }}
           draft: false
           prerelease: true
 
       - name: Upload artifact to release
-        uses: actions/upload-release-asset@v1
+        uses: softprops/action-gh-release@v2
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: /mnt/openwrt/bin/targets/mediatek/mtk-openwrt-24.10.tar.gz
-          asset_name: mtk-openwrt-24.10.tar.gz
-          asset_content_type: application/gzip
+          nmae: ${{ env.RELEASE_DATE }} Nightly
+          tag_name: ${{ env.RELEASE_TAG }}
+          draft: false
+          prerelease: true
+          files: /mnt/openwrt/bin/targets/mediatek/mtk-openwrt-24.10.tar.gz
           
