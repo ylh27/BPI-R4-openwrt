@@ -8,7 +8,7 @@ on:
       release_state:
         description: "Prerelease"
         required: true
-        default: false
+        default: true
       release_tag:
         description: "Release Tag"
         required: true
