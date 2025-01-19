@@ -5,6 +5,14 @@ name: 24.10-mtk-feeds-bpi-r4
 on:
   workflow_dispatch:
     inputs:
+      release_state:
+        description: "Prerelease"
+        required: true
+        default: false
+      release_tag:
+        description: "Release Tag"
+        required: true
+        default: "Nightly"
       openwrt_commit:
         description: "OpenWrt Commit to Use"
         required: true
@@ -62,18 +70,10 @@ jobs:
           cd /mnt/openwrt/bin/targets/mediatek
           sudo tar -czvf mtk-openwrt-24.10.tar.gz filogic
 
-      - name: Set release date
-        run: echo "RELEASE_DATE=$(date -u +'%Y-%m-%d')" >> $GITHUB_ENV
-
-      - name: Set release tag
+      - name: Set env
         run: |
-          if [ "${{ github.event_name }}" == "schedule" ]; then
-            echo "This is a scheduled run."
-            echo "RELEASE_TAG=$(date -u +'%Y-%m-%d')" >> $GITHUB_ENV
-          elif [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
-            echo "This is a manual run."
-            echo "RELEASE_TAG=$(date -u +'%Y-%m-%d')-${{ inputs.openwrt_commit }}-${{ inputs.mtk_commit }}" >> $GITHUB_ENV
-          fi
+          echo "RELEASE_DATE=$(date -u +'%Y-%m-%d')" >> $GITHUB_ENV
+          echo "RELEASE_TAG=$(date -u +'%Y-%m-%d')-${{ inputs.release_tag }}" >> $GITHUB_ENV
 
       - name: Create release
         id: create_release
@@ -81,17 +81,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          release_name: ${{ env.RELEASE_DATE }} Nightly
+          release_name: ${{ env.RELEASE_DATE }} ${{ inputs.release_tag }}
           tag_name: ${{ env.RELEASE_TAG }}
           draft: false
-          prerelease: true
+          prerelease: ${{ inputs.release_state }}
 
       - name: Upload artifact to release
         uses: softprops/action-gh-release@v2
         with:
-          nmae: ${{ env.RELEASE_DATE }} Nightly
+          nmae: ${{ env.RELEASE_DATE }} ${{ inputs.release_tag }}
           tag_name: ${{ env.RELEASE_TAG }}
           draft: false
-          prerelease: true
+          prerelease: ${{ inputs.release_state }}
           files: /mnt/openwrt/bin/targets/mediatek/mtk-openwrt-24.10.tar.gz
-          
