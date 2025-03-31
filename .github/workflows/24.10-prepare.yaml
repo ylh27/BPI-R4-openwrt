@@ -1,6 +1,6 @@
 # compile from latest commits
 
-name: 24.10-mtk-feeds-bpi-r4
+name: 24.10-perpare
 
 on:
   workflow_dispatch:
