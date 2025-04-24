@@ -65,7 +65,7 @@ jobs:
         run: |
           cd /mnt/openwrt
           export FORCE_UNSAFE_CONFIGURE=1
-          sudo -E bash ../mtk-openwrt/autobuild/unified/autobuild.sh filogic-mac80211-bpi-r4 log_file=make
+          sudo -E bash ../mtk-openwrt/autobuild/unified/autobuild.sh filogic-mac80211-mt7988_rfb-mt7996 log_file=make
 
       - name: Save build artifacts
         uses: actions/upload-artifact@v4
